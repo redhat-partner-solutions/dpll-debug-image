@@ -9,7 +9,7 @@ definitions:
     type: enum
     name: mode
     doc: |
-      working-modes a dpll can support, differentiate if and how dpll selects
+      working modes a dpll can support, differentiates if and how dpll selects
       one of its inputs to syntonize with it, valid values for DPLL_A_MODE
       attribute
     entries:
@@ -19,13 +19,7 @@ definitions:
         value: 1
       -
         name: automatic
-        doc: highest prio, valid input, auto selected by dpll
-      -
-        name: holdover
-        doc: dpll forced into holdover mode
-      -
-        name: freerun
-        doc: dpll driven on system clk
+        doc: highest prio input pin auto selected by dpll
     render-max: true
   -
     type: enum
@@ -37,8 +31,8 @@ definitions:
       -
         name: unlocked
         doc: |
-          dpll was not yet locked to any valid input (or is in mode:
-            DPLL_MODE_FREERUN)
+          dpll was not yet locked to any valid input (or forced by setting
+          DPLL_A_MODE to DPLL_MODE_DETACHED)
         value: 1
       -
         name: locked
@@ -52,11 +46,10 @@ definitions:
         name: holdover
         doc: |
           dpll is in holdover state - lost a valid lock or was forced
-          by selecting DPLL_MODE_HOLDOVER mode (latter possible only
-          when dpll lock-state was already DPLL_LOCK_STATUS_LOCKED,
-          if dpll lock-state was not DPLL_LOCK_STATUS_LOCKED, the
-          dpll's lock-state shall remain DPLL_LOCK_STATUS_UNLOCKED
-          even if DPLL_MODE_HOLDOVER was requested)
+          by disconnecting all the pins (latter possible only
+          when dpll lock-state was already DPLL_LOCK_STATUS_LOCKED_HO_ACQ,
+          if dpll lock-state was not DPLL_LOCK_STATUS_LOCKED_HO_ACQ, the
+          dpll's lock-state shall remain DPLL_LOCK_STATUS_UNLOCKED)
     render-max: true
   -
     type: const
@@ -157,17 +150,20 @@ definitions:
     render-max: true
   -
     type: flags
-    name: pin-caps
+    name: pin-capabilities
     doc: |
       defines possible capabilities of a pin, valid flags on
-      DPLL_A_PIN_CAPS attribute
+      DPLL_A_PIN_CAPABILITIES attribute
     entries:
       -
         name: direction-can-change
+        doc: pin direction can be changed
       -
         name: priority-can-change
+        doc: pin priority can be changed
       -
         name: state-can-change
+        doc: pin state can be changed
 
 attribute-sets:
   -
@@ -177,111 +173,140 @@ attribute-sets:
       -
         name: id
         type: u32
-        value: 1
       -
         name: module-name
         type: string
+      -
+        name: pad
+        type: pad
       -
         name: clock-id
         type: u64
       -
         name: mode
-        type: u8
+        type: u32
         enum: mode
       -
         name: mode-supported
-        type: u8
+        type: u32
         enum: mode
         multi-attr: true
       -
         name: lock-status
-        type: u8
+        type: u32
         enum: lock-status
       -
         name: temp
         type: s32
       -
         name: type
-        type: u8
+        type: u32
         enum: type
-      -
-        name: pin-id
-        type: u32
-      -
-        name: pin-board-label
-        type: string
-      -
-        name: pin-panel-label
-        type: string
-      -
-        name: pin-package-label
-        type: string
-      -
-        name: pin-type
-        type: u8
-        enum: pin-type
-      -
-        name: pin-direction
-        type: u8
-        enum: pin-direction
-      -
-        name: pin-frequency
-        type: u64
-      -
-        name: pin-frequency-supported
-        type: nest
-        multi-attr: true
-        nested-attributes: pin-frequency-range
-      -
-        name: pin-frequency-min
-        type: u64
-      -
-        name: pin-frequency-max
-        type: u64
-      -
-        name: pin-prio
-        type: u32
-      -
-        name: pin-state
-        type: u8
-        enum: pin-state
-      -
-        name: pin-dpll-caps
-        type: u32
-      -
-        name: pin-parent
-        type: nest
-        multi-attr: true
-        nested-attributes: pin-parent
   -
-    name: pin-parent
-    subset-of: dpll
+    name: pin
+    enum-name: dpll_a_pin
     attributes:
       -
         name: id
         type: u32
       -
-        name: pin-direction
-        type: u8
-      -
-        name: pin-prio
+        name: parent-id
         type: u32
       -
-        name: pin-state
-        type: u8
+        name: module-name
+        type: string
       -
-        name: pin-id
-        type: u32
-
-  -
-    name: pin-frequency-range
-    subset-of: dpll
-    attributes:
+        name: pad
+        type: pad
       -
-        name: pin-frequency-min
+        name: clock-id
         type: u64
       -
-        name: pin-frequency-max
+        name: board-label
+        type: string
+      -
+        name: panel-label
+        type: string
+      -
+        name: package-label
+        type: string
+      -
+        name: type
+        type: u32
+        enum: pin-type
+      -
+        name: direction
+        type: u32
+        enum: pin-direction
+      -
+        name: frequency
+        type: u64
+      -
+        name: frequency-supported
+        type: nest
+        multi-attr: true
+        nested-attributes: frequency-range
+      -
+        name: frequency-min
+        type: u64
+      -
+        name: frequency-max
+        type: u64
+      -
+        name: prio
+        type: u32
+      -
+        name: state
+        type: u32
+        enum: pin-state
+      -
+        name: capabilities
+        type: u32
+      -
+        name: parent-device
+        type: nest
+        multi-attr: true
+        nested-attributes: pin-parent-device
+      -
+        name: parent-pin
+        type: nest
+        multi-attr: true
+        nested-attributes: pin-parent-pin
+  -
+    name: pin-parent-device
+    subset-of: pin
+    attributes:
+      -
+        name: parent-id
+        type: u32
+      -
+        name: direction
+        type: u32
+      -
+        name: prio
+        type: u32
+      -
+        name: state
+        type: u32
+  -
+    name: pin-parent-pin
+    subset-of: pin
+    attributes:
+      -
+        name: parent-id
+        type: u32
+      -
+        name: state
+        type: u32
+  -
+    name: frequency-range
+    subset-of: pin
+    attributes:
+      -
+        name: frequency-min
+        type: u64
+      -
+        name: frequency-max
         type: u64
 
 operations:
@@ -291,7 +316,6 @@ operations:
       name: device-id-get
       doc: |
         Get id of dpll device that matches given attributes
-      value: 1
       attribute-set: dpll
       flags: [ admin-perm ]
 
@@ -320,7 +344,6 @@ operations:
         request:
           attributes:
             - id
-            - module-name
         reply: &dev-attrs
           attributes:
             - id
@@ -349,7 +372,6 @@ operations:
         request:
           attributes:
             - id
-            - mode
     -
       name: device-create-ntf
       doc: Notification about device appearing
@@ -369,7 +391,7 @@ operations:
       name: pin-id-get
       doc: |
         Get id of a pin that matches given attributes
-      attribute-set: dpll
+      attribute-set: pin
       flags: [ admin-perm ]
 
       do:
@@ -379,10 +401,10 @@ operations:
           attributes:
             - module-name
             - clock-id
-            - pin-board-label
-            - pin-panel-label
-            - pin-package-label
-            - pin-type
+            - board-label
+            - panel-label
+            - package-label
+            - type
         reply:
           attributes:
             - id
@@ -396,7 +418,7 @@ operations:
         - dump request with target dpll - list all the pins registered with
           a given dpll device
         - do request with target dpll and target pin - single pin attributes
-      attribute-set: dpll
+      attribute-set: pin
       flags: [ admin-perm ]
 
       do:
@@ -405,18 +427,18 @@ operations:
         request:
           attributes:
             - id
-            - pin-id
         reply: &pin-attrs
           attributes:
-            - pin-id
-            - pin-board-label
-            - pin-panel-label
-            - pin-package-label
-            - pin-type
-            - pin-frequency
-            - pin-frequency-supported
-            - pin-parent
-            - pin-dpll-caps
+            - id
+            - board-label
+            - panel-label
+            - package-label
+            - type
+            - frequency
+            - frequency-supported
+            - capabilities
+            - parent-device
+            - parent-pin
 
       dump:
         pre: dpll-lock-dumpit
@@ -429,7 +451,7 @@ operations:
     -
       name: pin-set
       doc: Set attributes of a target pin
-      attribute-set: dpll
+      attribute-set: pin
       flags: [ admin-perm ]
 
       do:
@@ -438,12 +460,12 @@ operations:
         request:
           attributes:
             - id
-            - pin-id
-            - pin-frequency
-            - pin-direction
-            - pin-prio
-            - pin-state
-            - pin-parent
+            - frequency
+            - direction
+            - prio
+            - state
+            - parent-device
+            - parent-pin
     -
       name: pin-create-ntf
       doc: Notification about pin appearing

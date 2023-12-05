@@ -5,7 +5,7 @@ This repo helps to build a container image for netlink DPLL debug
 ## Bulid ##
 
 ```bash
-export IMG='quay.io/vgrinber/tools:dpll'
+export IMG='quay.io/jnunez/tools:dpll_lat'
 ```
 (replace with your repository)
 
