@@ -5,7 +5,7 @@ This repo helps to build a container image for netlink DPLL debug
 ## Bulid ##
 
 ```bash
-export IMG='quay.io/jnunez/tools:dpll_lat'
+export IMG='quay.io/redhat-partner-solutions/dpll-debug:0.1'
 ```
 (replace with your repository)
 
@@ -36,13 +36,13 @@ RUN sed -i 's/, socket.MSG_DONTWAIT//g' lib/ynl.py
 ## Use ##
 
 ```bash
-oc debug no/cnfde21.ptp.lab.eng.bos.redhat.com --image=quay.io/vgrinber/tools@sha256:d953aeefb3cc23ffceddce168f754b251f98b2553b1e3fc85c6f3fa57b480951
+oc debug no/cnfde21.ptp.lab.eng.bos.redhat.com --image=$IMG
 Starting pod/cnfde21ptplabengbosredhatcom-debug-tl8hl ...
 To use host binaries, run `chroot /host`
 Pod IP: 10.16.230.5
 If you don't see a command prompt, try pressing enter.
 
-sh-5.1# python3 cli.py --spec /linux/Documentation/netlink/specs/dpll.yaml --dump device-get
+sh-5.1# python3 cli.py --no-schema --spec /linux/Documentation/netlink/specs/dpll.yaml --dump device-get
 [{'clock-id': 5799633565433967664,
   'id': 0,
   'lock-status': 'locked-ho-acq',
