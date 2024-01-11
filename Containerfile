@@ -6,7 +6,7 @@ RUN dnf install -y git python3 python3-pip && \
     pip install -r /linux/tools/net/ynl/requirements.txt && \
     dnf remove -y git
 # Comment out this line when dpll.yaml will be upstream
-COPY dpll.yaml /linux/Documentation/netlink/specs/dpll.yaml
+#COPY dpll.yaml /linux/Documentation/netlink/specs/dpll.yaml
 
 WORKDIR /linux/tools/net/ynl
 

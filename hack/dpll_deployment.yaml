@@ -24,7 +24,7 @@ spec:
   containers:
   - command:
     - /bin/sh
-    image: quay.io/redhat-partner-solutions/dpll-debug:0.2
+    image: quay.io/redhat-partner-solutions/dpll-debug:0.3
     imagePullPolicy: Always
     name: debug
     resources: {}
@@ -45,7 +45,7 @@ spec:
   enableServiceLinks: true
   imagePullSecrets:
   - name: default-dockercfg-wkkdm
-    #nodeName: r740-u27.cormorant.wpc.test
+  #nodeName: discrete.interceptor.cars2.lab
   preemptionPolicy: PreemptLowerPriority
   priority: 0
   restartPolicy: Never

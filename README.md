@@ -10,7 +10,7 @@ export IMG='quay.io/redhat-partner-solutions/dpll-debug:0.1'
 (replace with your repository)
 
 ```bash
-podman build -t $IMG -f Containerfile  . && podman push $IMG
+podman build --no-cache -t $IMG -f Containerfile  . && podman push $IMG
 ```
 
 ## Hack ##
@@ -36,12 +36,6 @@ RUN sed -i 's/, socket.MSG_DONTWAIT//g' lib/ynl.py
 ## Use ##
 
 ```bash
-oc debug no/cnfde21.ptp.lab.eng.bos.redhat.com --image=$IMG
-Starting pod/cnfde21ptplabengbosredhatcom-debug-tl8hl ...
-To use host binaries, run `chroot /host`
-Pod IP: 10.16.230.5
-If you don't see a command prompt, try pressing enter.
-
 sh-5.1# python3 cli.py --no-schema --spec /linux/Documentation/netlink/specs/dpll.yaml --dump device-get
 [{'clock-id': 5799633565433967664,
   'id': 0,
