@@ -8,6 +8,10 @@ RUN dnf install -y git pciutils python3 python3-pip && \
 # Comment out this line when dpll.yaml will be upstream
 #COPY dpll.yaml /linux/Documentation/netlink/specs/dpll.yaml
 
+WORKDIR /root
+RUN mkdir /root/custom_scripts
+COPY ./src/ /root/custom_scripts/
+
 WORKDIR /linux/tools/net/ynl
 
 # Uncomment this line if you want cli to block while waiting on netlink notifications
