@@ -30,7 +30,7 @@ If we want to wait for notifications, this hack must be done:
 
 ```
 # Uncomment this line if you want cli to block while waiting on netlink notifications
-RUN sed -i 's/, socket.MSG_DONTWAIT//g' lib/ynl.py 
+RUN sed -i 's/, socket.MSG_DONTWAIT//g' lib/ynl.py
 ```
 
 ## Use ##
